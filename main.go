@@ -8,6 +8,7 @@ import (
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Server", "Go")
 	w.Write([]byte("Hello from Snippetbox"))
 }
 
@@ -17,12 +18,16 @@ func snippetView(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	msg := fmt.Sprintf("Display a specific snippet value with id %d", id)
-	w.Write([]byte(msg))
+	fmt.Fprintf(w, "Display a specific snippet value with id %d", id)
 }
 
 func snippetCreate(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Display a form for creating a new snippet.."))
+}
+
+func snippetCreatePost(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(201)
+	w.Write([]byte("Save a new snippet"))
 }
 
 func main() {
@@ -30,6 +35,7 @@ func main() {
 	mux.HandleFunc("GET /{$}", home)
 	mux.HandleFunc("GET/snippet/view/{id}", snippetView)
 	mux.HandleFunc("GET /snippet/create", snippetCreate)
+	mux.HandleFunc("POST /snippet/create", snippetCreatePost)
 	log.Printf("Listening on port 4000")
 	err := http.ListenAndServe(":4000", mux)
 	log.Fatal(err)
