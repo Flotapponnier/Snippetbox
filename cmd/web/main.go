@@ -24,6 +24,7 @@ type config struct {
 
 func main() {
 	var cfg config
+
 	flag.StringVar(&cfg.addr, "addr", ":4000", "HTTP network adress")
 	flag.StringVar(&cfg.staticDir, "static-dir", "./ui/static", "Path to static assets")
 	dsn := flag.String("dsn", "web:1234@/snippetbox?parseTime=true", "MySQL data source name")
