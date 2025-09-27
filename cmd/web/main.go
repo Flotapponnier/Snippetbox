@@ -65,8 +65,14 @@ func main() {
 		sessionManager: sessionManager,
 	}
 
-	logger.Info("Starting server", "addr", cfg.addr)
-	err = http.ListenAndServe(cfg.addr, app.routes(cfg))
+	srv := &http.Server{
+		Addr:     cfg.addr,
+		Handler:  app.routes(cfg),
+		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError),
+	}
+	logger.Info("Starting server", "addr", srv.Addr)
+
+	err = srv.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 	logger.Error(err.Error())
 	os.Exit(1)
 }
