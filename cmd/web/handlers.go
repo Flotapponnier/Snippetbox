@@ -179,21 +179,24 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 			data.Form = form
 			app.render(w, r, http.StatusUnprocessableEntity, "login.html", data)
 		} else {
-			app.serverError(w, r, err)
+			err = app.sessionManager.RenewToken(r.Context())
+			if err != nil {
+				app.serverError(w, r, err)
+				return
+			}
+			app.sessionManager.Put(r.Context(), "authenticatedUserId", id)
+			http.Redirect(w, r, "/snippet/create", http.StatusSeeOther)
 		}
-		return
 	}
+}
 
-	err = app.sessionManager.RenewToken(r.Context())
+func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
+	err := app.sessionManager.RenewToken(r.Context())
 	if err != nil {
 		app.serverError(w, r, err)
 		return
 	}
-
-	app.sessionManager.Put(r.Context(), "authenticatedUserId", id)
-	http.Redirect(w, r, "/snippet/create", http.StatusSeeOther)
-}
-
-func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Logout the user..")
+	app.sessionManager.Remove(r.Context(), "authenticatedUserId")
+	app.sessionManager.Put(r.Context(), "flash", "You've been logged out successfully !")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
