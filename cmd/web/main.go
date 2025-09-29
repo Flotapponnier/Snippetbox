@@ -74,7 +74,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:         cfg.addr,
-		Handler:      app.routes(cfg),
+		Handler:      app.routes(),
 		ErrorLog:     slog.NewLogLogger(logger.Handler(), slog.LevelError),
 		TLSConfig:    tlsConfig,
 		IdleTimeout:  time.Minute,
