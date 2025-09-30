@@ -74,7 +74,7 @@ func (ts *testServer) postForm(t *testing.T, urlPath string, form url.Values) (i
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	req.Header.Set("Origin", ts.URL)
-	
+
 	rs, err := ts.Client().Do(req)
 	if err != nil {
 		t.Fatal(err)
